@@ -1,0 +1,31 @@
+/* General Reset */
+/*
+@font-face {
+    font-family: 'Host Grotesk';
+    src: url('fonts/HostGrotesk-Regular.woff2') format('woff2'),
+         url('fonts/HostGrotesk-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+} */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Host Grotesk', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: top;
+    height: 100vh;
+    background-color: #1e2020;
+}
+
+/* Centering and Styling Text */
+.container {
+    text-align: center;
+}
+
+h1 {
+    color: #d4f2ee;
+    font-size: 3rem;
+    text-shadow: 1px 1px 20px rgb(32, 255, 236);
+}
