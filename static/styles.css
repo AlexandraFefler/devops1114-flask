@@ -1,17 +1,10 @@
 /* General Reset */
-/*
-@font-face {
-    font-family: 'Host Grotesk';
-    src: url('fonts/HostGrotesk-Regular.woff2') format('woff2'),
-         url('fonts/HostGrotesk-Regular.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-} */
-
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Host Grotesk', sans-serif;
+    font-family: "Lobster", sans-serif;
+    font-weight: 400;
+    font-style: normal;
     display: flex;
     justify-content: center;
     align-items: top;
