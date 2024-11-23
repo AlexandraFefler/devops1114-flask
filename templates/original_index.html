@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <!-- linking 'Lobster' font -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<!-- Link to CSS, url_for() is a function (dunno from where tho) that returns the full url address of where to find styles.css -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='original_styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greetings</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello {{ name }}!</h1> <!-- using {{ name }} as a parameter gotten from the url that accessed this index.html page (/greet/<name>) -->
+    </div>
+    <div class="container">
+        <!-- <script src="https://cdn.htmlgames.com/embed.js?game=Rotris&amp;bgcolor=white"></script>   rotris-->
+        <!-- <script src="https://cdn.htmlgames.com/embed.js?game=AirportSniper&amp;bgcolor=white"></script>  airport sniper -->
+        <script src="https://cdn.htmlgames.com/embed.js?game=HuntingJackAtHome&amp;bgcolor=white"></script>  <!-- find jack the doggo :) Love this!!! -->
+        <!-- <script src="https://cdn.htmlgames.com/embed.js?game=GalaxyShooter&amp;bgcolor=white"></script>  galaxy shooter -->
+    </div>
+</body>
+</html>

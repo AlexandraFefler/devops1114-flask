@@ -6,10 +6,18 @@ body {
     font-weight: 400;
     font-style: normal;
     display: flex;
-    justify-content: center;
-    align-items: top;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: flex-start; /* Align items at the top */
+    align-items: center; /* Center horizontally */
     height: 100vh;
     background-color: #1e2020;
+}
+
+/* Ensure stacking */
+.container,
+body > div {
+    display: block;
+    margin-bottom: 20px; /* Optional spacing between divs */
 }
 
 /* Centering and Styling Text */
