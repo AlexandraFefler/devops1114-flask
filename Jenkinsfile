@@ -10,7 +10,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning git repo...'
-                sh 'git clone https://github.com/your-repo-url.git'
+                sh 'git clone https://github.com/AlexandraFefler/devops1114-flask.git'
             }
         }
         stage('Test') {
