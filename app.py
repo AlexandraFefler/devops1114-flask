@@ -40,4 +40,4 @@ def greet(name): # greet() gets it's name arg by trying to access it in the url 
     return render_template("original_index.html", name = name, quote = get_random_quote())
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=8080)
+    app.run(debug=True, host="0.0.0.0", port=8000)
