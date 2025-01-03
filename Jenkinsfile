@@ -2,9 +2,18 @@ pipeline {
     agent any
 
     stages {
-        stage('Build') {
+        stage('Cleanup') {
             steps {
-                echo 'Build'
+                echo 'Cleaning up before cloning...'
+                // Remove the repository folder if it exists
+                sh '''
+                    if [ -d "devops1114-flask" ]; then
+                        echo "Directory exists, cleaning up..."
+                        rm -rf devops1114-flask
+                    else
+                        echo "Directory does not exist, no cleanup needed."
+                    fi
+                '''
             }
         }
         stage('Clone') {
@@ -13,11 +22,19 @@ pipeline {
                 sh 'git clone https://github.com/AlexandraFefler/devops1114-flask.git'
             }
         }
+        
+        stage('Build') {
+            steps {
+                echo 'Build'
+            }
+        }
+        
         stage('Test') {
             steps {
                 echo 'Test'
             }
         }
+        
         stage('Deploy') {
             steps {
                 echo 'Deploy'
