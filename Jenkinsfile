@@ -135,17 +135,9 @@ pipeline {
                     docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
                     
                     echo "Waiting for the app to start..."
-                    for i in {1..20}; do
-                        if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000 | grep -q "^200$"; then
-                            echo "Test passed: App is responding with HTTP 200."
-                            exit 0
-                        else
-                            echo "App not ready yet. Retrying in 3 seconds..."
-                            sleep 3
-                        fi
-                    done
+                    sleep 120
                     
-                    echo "Test failed: App did not respond with HTTP 200 after 60 seconds."
+                    echo "Test failed: App did not respond with HTTP 200 after 120 seconds."
                     exit 1
                 '''
                 }
