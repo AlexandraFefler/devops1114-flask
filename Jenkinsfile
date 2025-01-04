@@ -128,7 +128,7 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                echo "Ensuring that previous caontainers don't run, running the Docker container..."
+                echo "Ensuring that previous containers don't run, running the Docker container..."
                 sh '''
                     docker stop devops1114-flask || true
                     docker rm devops1114-flask || true
@@ -148,18 +148,11 @@ pipeline {
                         exit 1
                     fi
                 '''
-                }
             }
+        }
 
-        
         stage('Deploy') {
             steps {
-                // echo "Ensuring that previous caontainers don't run, running the Docker container..."
-                // sh '''
-                //     docker stop devops1114-flask || true
-                //     docker rm devops1114-flask || true
-                //     docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
-                // '''
                 echo 'Deploying to EC2 instance...'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'SSH_KEY')]) {
                     sh '''
@@ -180,6 +173,7 @@ pipeline {
                         EOF
                     '''
                 }
+            }
         }
     }
 }
