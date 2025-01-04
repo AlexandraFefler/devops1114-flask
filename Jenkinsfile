@@ -170,7 +170,7 @@ pipeline {
                             docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
         
                             echo "Deployment completed!"
-                        EOF
+EOF
                     '''
                 }
             }
