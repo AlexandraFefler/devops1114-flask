@@ -130,6 +130,7 @@ pipeline {
             steps {
                 echo "Ensuring that previous containers don't run, running the Docker container..."
                 sh '''
+                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
                     docker stop devops1114-flask || true
                     docker rm devops1114-flask || true
                     docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
@@ -157,6 +158,7 @@ pipeline {
                 echo 'Deploying to EC2 instance...'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'SSH_KEY')]) {
                     sh '''
+                VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
                 chmod 400 $SSH_KEY
                 echo "Connecting to EC2 instance..."
                 ssh -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$EC2_HOST <<EOF
