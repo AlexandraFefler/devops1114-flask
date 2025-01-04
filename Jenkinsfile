@@ -16,6 +16,7 @@ pipeline {
                 '''
             }
         }
+        
         stage('Clone') {
             steps {
                 echo 'Cloning git repo...'
@@ -25,7 +26,12 @@ pipeline {
         
         stage('Build') {
             steps {
-                echo 'Build'
+                echo 'Building...'
+                sh '''
+                    cd devops1114-flask
+                    docker build -t devops1114-flask:latest .
+                    echo "running app on http://$(hostname -I | awk '{print $1}'):8000"
+                '''
             }
         }
         
