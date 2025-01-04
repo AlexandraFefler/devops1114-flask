@@ -153,7 +153,12 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                echo 'Deploy'
+                echo "Ensuring that previous caontainers don't run, running the Docker container..."
+                sh '''
+                    docker stop devops1114-flask || true
+                    docker rm devops1114-flask || true
+                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
+                '''
             }
         }
     }
