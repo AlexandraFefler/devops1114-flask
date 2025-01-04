@@ -33,6 +33,7 @@ pipeline {
             steps {
                 echo 'Logging into Docker...'
                 sh '''
+                    echo "$DOCKER_PASSWORD      yes it is unsafe i know"
                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                 '''
             }
