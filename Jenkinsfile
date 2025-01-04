@@ -101,7 +101,10 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Test'
+                echo 'Testing...'
+                sh '''
+                    curl -s -o /dev/null -w "%{http_code}" http://$(hostname -I | awk '{print $1}'):8000 || echo "Test failed"
+                '''
             }
         }
         
