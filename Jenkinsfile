@@ -73,6 +73,7 @@ pipeline {
                 sh '''
                     set -x # Log commands
                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                    docker info | grep Username
                 '''
             }
         }
@@ -89,13 +90,38 @@ pipeline {
             }
         }
 
+        stage('Verify Image') {
+            steps {
+                echo 'Verifying built image...'
+                sh '''
+                    docker images | grep "sashafefler/devops1114-flask"
+                '''
+            }
+        }
+
         stage('Push to DH') {
             steps {
-                echo 'Pushing the built image to Docker Hub...'
-                sh '''
-                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
-                    docker push sashafefler/devops1114-flask:$VERSION
-                '''
+                echo 'Pushing the built image to Docker Hub with retry...'
+                script {
+                    def retries = 3
+                    def success = false
+                    while (!success && retries > 0) {
+                        try {
+                            sh '''
+                                VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                                echo "Attempting to push: sashafefler/devops1114-flask:$VERSION"
+                                docker push sashafefler/devops1114-flask:$VERSION
+                            '''
+                            success = true
+                        } catch (Exception e) {
+                            retries--
+                            echo "Push failed. Retries left: ${retries}"
+                            if (retries == 0) {
+                                error "Docker push failed after multiple attempts."
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -114,6 +140,14 @@ pipeline {
             steps {
                 echo 'Testing...'
                 sh '''
+                    echo "Checking if the app is running..."
+                    if ! netstat -tuln | grep ":8000" > /dev/null 2>&1; then
+                        echo "App is not running. Test cannot proceed."
+                        exit 1
+                    else
+                        echo "App is running on port 8000. Proceeding with the test..."
+                    fi
+
                     curl -s -o /dev/null -w "%{http_code}" http://$(hostname -I | awk '{print $1}'):8000 || echo "Test failed"
                 '''
             }
