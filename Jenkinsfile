@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_USERNAME = 'sashafefler' // Replace with your Docker Hub username
+        DOCKER_PASSWORD = credentials('docker-hub-password') // Reference to Jenkins credentials
+    }
+    
     stages {
         stage('Cleanup') {
             steps {
@@ -21,6 +26,15 @@ pipeline {
             steps {
                 echo 'Cloning git repo...'
                 sh 'git clone https://github.com/AlexandraFefler/devops1114-flask.git'
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                echo 'Logging into Docker...'
+                sh '''
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                '''
             }
         }
         
