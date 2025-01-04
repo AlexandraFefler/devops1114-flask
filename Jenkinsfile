@@ -127,7 +127,7 @@ pipeline {
 
         stage('Run Container') {
             steps {
-                echo 'Running the Docker container...'
+                echo "Ensuring that previous caontainers don't run, running the Docker container..."
                 sh '''
                     docker stop devops1114-flask || true
                     docker rm devops1114-flask || true
@@ -148,15 +148,19 @@ pipeline {
                         echo "App is running on port 8000. Proceeding with the test..."
                     fi
         
-                    echo "Running curl test..."
-                    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$(hostname -I | awk '{print $1}'):8000)
-                    echo "HTTP status code: $HTTP_STATUS"
-                    
-                    if [ "$HTTP_STATUS" -ne 200 ]; then
-                        echo "Test failed with HTTP status $HTTP_STATUS"
+                    echo "Testing connectivity to 127.0.0.1..."
+                    HTTP_STATUS_LOCAL=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000)
+                    echo "Local HTTP status: $HTTP_STATUS_LOCAL"
+        
+                    echo "Testing connectivity to 192.168.1.26..."
+                    HTTP_STATUS_EXTERNAL=$(curl -s -o /dev/null -w "%{http_code}" http://192.168.1.26:8000)
+                    echo "External HTTP status: $HTTP_STATUS_EXTERNAL"
+        
+                    if [ "$HTTP_STATUS_EXTERNAL" -ne 200 ]; then
+                        echo "Test failed with HTTP status $HTTP_STATUS_EXTERNAL"
                         exit 1
                     else
-                        echo "Test passed. HTTP status $HTTP_STATUS"
+                        echo "Test passed. HTTP status $HTTP_STATUS_EXTERNAL"
                     fi
                 '''
                 }
