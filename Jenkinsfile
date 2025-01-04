@@ -2,15 +2,28 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USERNAME = 'shasatest' // Replace with your Docker Hub username
-        DOCKER_PASSWORD = credentials('DH-shasatest') // Reference to Jenkins credentials
+        DOCKER_USERNAME = 'shasatest' // Your Docker Hub username
+        DOCKER_PASSWORD = credentials('DH-shasatest') // Docker Hub token stored in Jenkins credentials
     }
-    
+
     stages {
+        stage('Ensure Docker Access') {
+            steps {
+                echo 'Ensuring Docker access...'
+                sh '''
+                    if ! docker info > /dev/null 2>&1; then
+                        echo "Docker daemon not accessible. Ensure the Jenkins user is in the Docker group."
+                        exit 1
+                    else
+                        echo "Docker is accessible."
+                    fi
+                '''
+            }
+        }
+
         stage('Cleanup') {
             steps {
                 echo 'Cleaning up before cloning...'
-                // Remove the repository folder if it exists
                 sh '''
                     if [ -d "devops1114-flask" ]; then
                         echo "Directory exists, cleaning up..."
@@ -31,9 +44,8 @@ pipeline {
 
         stage('Docker Login') {
             steps {
-                echo 'Logging into Docker...'
+                echo 'Logging into Docker Hub...'
                 sh '''
-                    echo "yes it is unsafe i know"
                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                 '''
             }
@@ -41,11 +53,11 @@ pipeline {
         
         stage('Build') {
             steps {
-                echo 'Building...'
+                echo 'Building Docker image...'
                 sh '''
                     cd devops1114-flask
                     docker build -t devops1114-flask:latest .
-                    echo "running app on http://$(hostname -I | awk '{print $1}'):8000"
+                    echo "Running app on http://$(hostname -I | awk '{print $1}'):8000"
                 '''
             }
         }
@@ -62,5 +74,4 @@ pipeline {
             }
         }
     }
-
 }
