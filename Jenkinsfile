@@ -125,21 +125,15 @@ pipeline {
             }
         }
 
-        stage('Run Container') {
-            steps {
-                echo "Ensuring that previous caontainers don't run, running the Docker container..."
-                sh '''
-                    docker stop devops1114-flask || true
-                    docker rm devops1114-flask || true
-                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
-                '''
-            }
-        }
-
         stage('Test') {
             steps {
-                echo 'Running tests...'
+                echo 'Running the app container and running tests...'
                 sh '''
+                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                    docker stop devops1114-flask || true
+                    docker rm devops1114-flask || true
+                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
+                
                     if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000 | grep -q "^200$"; then
                         echo "Test passed: App is responding with HTTP 200."
                     else
@@ -153,7 +147,13 @@ pipeline {
         
         stage('Deploy') {
             steps {
-                echo 'Deploy'
+                echo "Ensuring that previous caontainers don't run, running the Docker container..."
+                sh '''
+                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                    docker stop devops1114-flask || true
+                    docker rm devops1114-flask || true
+                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
+                '''
             }
         }
     }
