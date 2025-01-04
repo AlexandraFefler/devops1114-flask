@@ -132,7 +132,7 @@ pipeline {
                 sh '''
                     docker stop devops1114-flask || true
                     docker rm devops1114-flask || true
-                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
+                    docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
                 '''
             }
         }
@@ -165,10 +165,10 @@ pipeline {
                 docker rm devops1114-flask || true
 
                 echo "Pulling latest Docker image..."
-                docker pull sashafefler/devops1114-flask:latest
+                docker pull sashafefler/devops1114-flask:$VERSION
 
                 echo "Running the new container..."
-                docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
+                docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
 
                 echo "Deployment completed!"
 EOF
