@@ -46,7 +46,14 @@ pipeline {
             steps {
                 echo 'Logging into Docker Hub...'
                 sh '''
-                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin -v
+                    set -x # Enable debug mode to log each command
+                echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+                if [ $? -ne 0 ]; then
+                    echo "Docker login failed. Check Docker Hub credentials or permissions."
+                    exit 1
+                else
+                    echo "Docker login succeeded."
+                fi
                 '''
             }
         }
