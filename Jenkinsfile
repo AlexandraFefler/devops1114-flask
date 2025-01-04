@@ -60,12 +60,13 @@ pipeline {
                 echo 'Incrementing version...'
                 sh '''
                     CURRENT_VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
-                    NEW_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{print $1 "." $2+1}')
+                    NEW_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{if ($2+1 == 10) {print $1+1 ".0"} else {print $1 "." $2+1}}')
                     echo "$NEW_VERSION" > "$WORKSPACE/$VERSION_FILE"
                     echo "Updated version to $NEW_VERSION"
                 '''
             }
         }
+
 
         stage('Docker Login') {
             steps {
