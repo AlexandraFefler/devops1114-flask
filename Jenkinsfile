@@ -138,7 +138,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                echo 'Testing...'
+                echo 'Running tests...'
                 sh '''
                     echo "Checking if the app is running..."
                     if ! netstat -tuln | grep ":8000" > /dev/null 2>&1; then
@@ -147,11 +147,21 @@ pipeline {
                     else
                         echo "App is running on port 8000. Proceeding with the test..."
                     fi
-
-                    curl -s -o /dev/null -w "%{http_code}" http://$(hostname -I | awk '{print $1}'):8000 || echo "Test failed"
+        
+                    echo "Running curl test..."
+                    HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://$(hostname -I | awk '{print $1}'):8000)
+                    echo "HTTP status code: $HTTP_STATUS"
+                    
+                    if [ "$HTTP_STATUS" -ne 200 ]; then
+                        echo "Test failed with HTTP status $HTTP_STATUS"
+                        exit 1
+                    else
+                        echo "Test passed. HTTP status $HTTP_STATUS"
+                    fi
                 '''
+                }
             }
-        }
+
         
         stage('Deploy') {
             steps {
