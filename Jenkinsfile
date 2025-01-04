@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_USERNAME = 'shasatest' // Replace with your Docker Hub username
-        DOCKER_PASSWORD = credentials('docker-hub-token') // Reference to Jenkins credentials
+        DOCKER_PASSWORD = credentials('DH-shasatest') // Reference to Jenkins credentials
     }
     
     stages {
@@ -34,7 +34,7 @@ pipeline {
                 echo 'Logging into Docker...'
                 sh '''
                     echo "yes it is unsafe i know"
-                    echo dckr_pat_pzbfRjsvDaGLZsfeXsL9x7e_-KU | docker login -u "shasatest" --password-stdin
+                    echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                 '''
             }
         }
