@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_USERNAME = 'sashafefler' // Replace with your Docker Hub username
-        DOCKER_PASSWORD = credentials('docker-hub-password') // Reference to Jenkins credentials
+        DOCKER_PASSWORD = credentials('docker-hub-token') // Reference to Jenkins credentials
     }
     
     stages {
