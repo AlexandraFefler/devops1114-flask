@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_USERNAME = 'sashafefler' // Your Docker Hub username
         DOCKER_PASSWORD = credentials('DH-token') // Docker Hub token stored in Jenkins credentials
+        VERSION_FILE = 'version.txt'
     }
 
     stages {
@@ -16,6 +17,18 @@ pipeline {
                         exit 1
                     else
                         echo "Docker is accessible."
+                    fi
+                '''
+            }
+        }
+
+        stage('Setup Versioning') {
+            steps {
+                echo 'Setting up versioning...'
+                sh '''
+                    if [ ! -f "$WORKSPACE/$VERSION_FILE" ]; then
+                        echo "0.1" > "$WORKSPACE/$VERSION_FILE"
+                        echo "Initialized versioning at 0.1"
                     fi
                 '''
             }
@@ -42,6 +55,18 @@ pipeline {
             }
         }
 
+        stage('Increment Version') {
+            steps {
+                echo 'Incrementing version...'
+                sh '''
+                    CURRENT_VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                    NEW_VERSION=$(echo "$CURRENT_VERSION" | awk -F. '{print $1 "." $2+1}')
+                    echo "$NEW_VERSION" > "$WORKSPACE/$VERSION_FILE"
+                    echo "Updated version to $NEW_VERSION"
+                '''
+            }
+        }
+
         stage('Docker Login') {
             steps {
                 echo 'Logging into Docker Hub...'
@@ -57,9 +82,9 @@ pipeline {
                 echo 'Building Docker image...'
                 sh '''
                     cd devops1114-flask
-                    docker build -t sashafefler/devops1114-flask:latest .
-                    echo "Running app on http://$(wget -qO- ifconfig.me):8000"
-                    sleep 120
+                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                    docker build -t sashafefler/devops1114-flask:$VERSION .
+                    echo "Built Docker image with tag sashafefler/devops1114-flask:$VERSION"
                 '''
             }
         }
@@ -68,11 +93,12 @@ pipeline {
             steps {
                 echo 'Pushing the built image to Docker Hub...'
                 sh '''
-                    docker push sashafefler/devops1114-flask:latest
+                    VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                    docker push sashafefler/devops1114-flask:$VERSION
                 '''
             }
         }
-        
+
         stage('Test') {
             steps {
                 echo 'Test'
