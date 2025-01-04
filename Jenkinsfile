@@ -140,19 +140,12 @@ pipeline {
             steps {
                 echo 'Running tests...'
                 sh '''
-                    echo "Checking if the app is running..."
-                    if ! netstat -tuln | grep ":8000" > /dev/null 2>&1; then
-                        echo "App is not running. Test cannot proceed."
-                        exit 1
+                    if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000 | grep -q "^200$"; then
+                        echo "Test passed: App is responding with HTTP 200."
                     else
-                        echo "App is running on port 8000. Proceeding with the test..."
+                        echo "Test failed: App is not responding with HTTP 200."
+                        exit 1
                     fi
-        
-                    echo "Testing connectivity to 127.0.0.1..."
-                    curl -v http://127.0.0.1:8000 || echo "Test failed for 127.0.0.1"
-                    
-                    echo "Testing connectivity to 192.168.1.26..."
-                    curl -v http://192.168.1.26:8000 || echo "Test failed for 192.168.1.26"
                 '''
                 }
             }
