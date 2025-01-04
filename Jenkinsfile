@@ -61,6 +61,7 @@ pipeline {
                     cd devops1114-flask
                     docker build -t devops1114-flask:latest .
                     echo "Running app on http://$(hostname -I | awk '{print $1}'):8000"
+                    slepp(4000)
                 '''
             }
         }
