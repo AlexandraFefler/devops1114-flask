@@ -59,8 +59,17 @@ pipeline {
                 echo 'Building Docker image...'
                 sh '''
                     cd devops1114-flask
-                    docker build -t devops1114-flask:latest .
+                    docker build -t sashafefler/devops1114-flask:latest .
                     echo "Running app on http://$(hostname -I | awk '{print $1}'):8000"
+                '''
+            }
+        }
+
+        stage('Push to DH') {
+            steps {
+                echo 'Pushing the built image to DockerHub'
+                sh '''
+                    docker push sashafefler/devops1114-flask:latest
                 '''
             }
         }
