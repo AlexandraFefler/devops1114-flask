@@ -47,8 +47,6 @@ pipeline {
                 echo 'Logging into Docker Hub...'
                 sh '''
                     set -x # Log commands
-                    echo "Username: $DOCKER_USERNAME"
-                    echo "Password: $DOCKER_PASSWORD" # Masked in Jenkins logs
                     echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
                 '''
             }
@@ -67,7 +65,7 @@ pipeline {
 
         stage('Push to DH') {
             steps {
-                echo 'Pushing the built image to DockerHub'
+                echo 'Pushing the built image to Docker Hub...'
                 sh '''
                     docker push sashafefler/devops1114-flask:latest
                 '''
