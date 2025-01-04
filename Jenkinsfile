@@ -141,6 +141,7 @@ pipeline {
             steps {
                 echo 'Running tests...'
                 sh '''
+                    sleep 10
                     if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000 | grep -q "^200$"; then
                         echo "Test passed: App is responding with HTTP 200."
                     else
@@ -156,22 +157,22 @@ pipeline {
                 echo 'Deploying to EC2 instance...'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'SSH_KEY')]) {
                     sh '''
-                        chmod 400 $SSH_KEY
-                        echo "Connecting to EC2 instance..."
-                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$EC2_HOST << EOF
-                            echo "Stopping existing container (if any)..."
-                            docker stop devops1114-flask || true
-                            docker rm devops1114-flask || true
-        
-                            echo "Pulling latest Docker image..."
-                            docker pull sashafefler/devops1114-flask:latest
-        
-                            echo "Running the new container..."
-                            docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
-        
-                            echo "Deployment completed!"
+                chmod 400 $SSH_KEY
+                echo "Connecting to EC2 instance..."
+                ssh -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$EC2_HOST <<EOF
+                echo "Stopping existing container (if any)..."
+                docker stop devops1114-flask || true
+                docker rm devops1114-flask || true
+
+                echo "Pulling latest Docker image..."
+                docker pull sashafefler/devops1114-flask:latest
+
+                echo "Running the new container..."
+                docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:latest
+
+                echo "Deployment completed!"
 EOF
-                    '''
+            '''
                 }
             }
         }
