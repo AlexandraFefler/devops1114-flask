@@ -9,6 +9,7 @@ pipeline {
     }
 
     stages {
+            //             WAS FOR DEBUG             //
         // stage('Ensure Docker Access') {
         //     steps {
         //         echo 'Ensuring Docker access...'
@@ -91,14 +92,15 @@ pipeline {
             }
         }
 
-        stage('Verify Image') {
-            steps {
-                echo 'Verifying built image...'
-                sh '''
-                    docker images | grep "sashafefler/devops1114-flask"
-                '''
-            }
-        }
+            //             WAS FOR DEBUG             //
+        // stage('Verify Image') {
+        //     steps {
+        //         echo 'Verifying built image...'
+        //         sh '''
+        //             docker images | grep "sashafefler/devops1114-flask"
+        //         '''
+        //     }
+        // }
 
     // add tag "latest" in addition to version 
         stage('Push to DH') {
@@ -143,7 +145,7 @@ pipeline {
             steps {
                 echo 'Running tests...'
                 sh '''
-                    sleep 10
+                    sleep 5
                     if curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000 | grep -q "^200$"; then
                         echo "Test passed: App is responding with HTTP 200."
                     else
@@ -154,28 +156,30 @@ pipeline {
             }
         }
 
+        // ssh -o StrictHostKeyChecking=no -> automatic 'yes' response to asking to confirm trusting the server we try to connect to 
+        // <<EOF commands...EOF executes all the commands inside here in the ssh command (inside the connected machine) so we don't have to use ssh for every command 
+        // docker stop devops1114-flask || true -> try to stop a running container, but if such container doesn't exist and the command fails, then return true anyway cuz we got to the state we wanted which is "no such container running" 
         stage('Deploy') {
             steps {
                 echo 'Deploying to EC2 instance...'
                 withCredentials([sshUserPrivateKey(credentialsId: 'ec2-key', keyFileVariable: 'SSH_KEY')]) {
                     sh '''
-                VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
-                chmod 400 $SSH_KEY
-                echo "Connecting to EC2 instance..."
-                ssh -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$EC2_HOST <<EOF
-                echo "Stopping existing container (if any)..."
-                docker stop devops1114-flask || true
-                docker rm devops1114-flask || true
+                        VERSION=$(cat "$WORKSPACE/$VERSION_FILE")
+                        chmod 400 $SSH_KEY
+                        echo "Connecting to EC2 instance..."
+                        ssh -o StrictHostKeyChecking=no -i $SSH_KEY ec2-user@$EC2_HOST <<EOF
+                        echo "Stopping existing container (if any)..."
+                        docker stop devops1114-flask || true
+                        docker rm devops1114-flask || true
 
-                echo "Pulling latest Docker image..."
-                docker pull sashafefler/devops1114-flask:$VERSION
+                        echo "Pulling latest Docker image..."
+                        docker pull sashafefler/devops1114-flask:$VERSION
 
-                echo "Running the new container..."
-                docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
+                        echo "Running the new container..."
+                        docker run -d -p 8000:8000 --name devops1114-flask sashafefler/devops1114-flask:$VERSION
 
-                echo "Deployment completed!"
-EOF
-            '''
+                        echo "Deployment completed!"EOF
+                    '''
                 }
             }
         }
