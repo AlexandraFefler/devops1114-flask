@@ -5,7 +5,7 @@ pipeline {
         DOCKER_USERNAME = 'sashafefler' // Your Docker Hub username
         DOCKER_PASSWORD = credentials('DH-token') // Docker Hub token stored in Jenkins credentials
         VERSION_FILE = 'version.txt'
-        EC2_HOST = '3.87.92.210' // Replace with your EC2's public IP or DNS
+        EC2_HOST = '54.242.104.130' // Replace with your EC2's public IP or DNS
     }
 
     stages {
